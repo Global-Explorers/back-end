@@ -71,22 +71,6 @@ app.put('/flight/;id', async (request, response) => {
     }
 });
 
-async function fetchAPIData(origin, destination, departure, adults) {
-    let responseToken = await axios.post(TOKEN_URL);
-    let token = responseToken.data.access_token;
- 
-    let FlightInfo = `${process.env.FLIGHT_URL}?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${departure}&adults=${adults}`
-    let responseFlights = await axios.get(FlightInfo, {
-        headers: {
-            authorization: `Bearer ${token}`
-        } 
-    });
-
-    let data = responseFlights.data;
-   
-    return data;
-};
-
 app.use('*', (request, response) => {
     response.status(500).send('Error, Not connected')
 });

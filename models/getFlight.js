@@ -3,15 +3,12 @@
 const axios = require('axios');
 require('dotenv').config();
 
+const fetchAPIData = require('../lib/fetchApiData')
 async function getFlight(req, res) {
     let { originLocationCode, destinationLocationCode, departureDate, adults } = req.query;
-    let url = `https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=${originLocationCode}&destinationLocationCode=${destinationLocationCode}&departureDate=${departureDate}&adults=${adults}`;
+    let apiData = await fetchAPIData(originLocationCode, destinationLocationCode, departureDate, adults)
+    res.send(apiData)
 }
-
-
-
-
-
 
 
 
