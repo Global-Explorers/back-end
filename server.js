@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose')
-const Flight = require('./models/flight');
+const getFlight = require('./models/flight');
 const axios = require('axios');
 const verifyUser = require('./auth');
 const { response } = require('express');
@@ -19,23 +19,24 @@ db.once('open', _ => {
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(authorize);
+// app.use(authorize);
 
 const PORT = process.env.PORT || 3002;
 
-app.get('/flight', async (request, response) => {
-    try {
-        let queryObject = {}
-        if (request.user.email) {
-            queryObject.email = request.user.email;
-        }
-        let flights = await Flight.find()
-        console.log(flights);
-        response.send(flights);
-    } catch(e) {
-        console.log(e);
-    }
-});
+app.get('/flight', getFlight);
+//  async (request, response) => {
+//     try {
+//         let queryObject = {}
+//         if (request.query.city) {
+//             queryObject.city = request.query.city;
+//         }
+//         let flights = await Flight.find()
+//         console.log(flights);
+//         response.send(flights);
+//     } catch(e) {
+//         console.log(e);
+//     }
+// });
 
 app.post('/flight', async (request, response) => {
     console.log(request.body);
@@ -70,19 +71,21 @@ app.put('/flight/;id', async (request, response) => {
     }
 });
 
-async function fetchAPIData(origin, destination, departureDate) {
+async function fetchAPIData(origin, destination, departure, adults) {
     let responseToken = await axios.post(TOKEN_URL);
     let token = responseToken.data.access_token;
-    // https://test.api.amadeus.com/v1/security/oauth2/token
-    // test token for test environment.
+ 
+    let FlightInfo = `${process.env.FLIGHT_URL}?originLocationCode=${origin}&destinationLocationCode=${destination}&departureDate=${departure}&adults=${adults}`
+    let responseFlights = await axios.get(FlightInfo, {
+        headers: {
+            authorization: `Bearer ${token}`
+        } 
+    });
 
-    let responseFlights = await axios.get(FLIGHT_URL);
     let data = responseFlights.data;
-    // https://test.api.amadeus.com/v2/shopping/flight-offers
-    // test flight url example.
-
+   
     return data;
-}
+};
 
 app.use('*', (request, response) => {
     response.status(500).send('Error, Not connected')
