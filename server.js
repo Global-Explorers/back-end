@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose')
-const getFlight = require('./models/flight');
+const getFlight = require('./models/getFlight');
 const axios = require('axios');
 const verifyUser = require('./auth');
 const { response } = require('express');
@@ -58,7 +58,7 @@ app.delete('/flight/:id', async (request, response) => {
     }
 });
 
-app.put('/flight/;id', async (request, response) => {
+app.put('/flight/:id', async (request, response) => {
     let id = request.params.id;
     console.log('Updated value of id: ', id);
     request.body.status=true
